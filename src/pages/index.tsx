@@ -2,6 +2,10 @@ import Apple from '@/components/Apple';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
+import { GameStart } from '@/components/GameStart';
+import { GameModal } from '@/components/GameModal';
+import { ArrivalLine } from '@/components/ArrivalLine';
+import { FallButton } from '@/components/FallButtom';
 
 const METRIC = {
   BG_HEIGHT: 5000,
@@ -19,10 +23,11 @@ export default function Home() {
 
   const [fallAnimation, api] = useSpring(() => ({
     top: appleStartTop, // 초기 위치
-    config: { tension: 50 },
+    config: { duration: 1800 },
     onChange: (result) => {
-      const currentTop = result.value.top; // 사과의 현재 위치
-      setDistanceToGround(groundTop - (currentTop + METRIC.APPLE_HEIGHT));
+      const currentTop = result.value.top; // 사과의 현재
+      const newDistance = groundTop - currentTop; // 도착선과 사과의 거리
+      setDistanceToGround(newDistance); // 음수 값도 상태로 반영
 
       window.scrollTo(0, currentTop - appleStartTop);
     },
@@ -31,7 +36,7 @@ export default function Home() {
   // 사과 낙하 시작
   const startFalling = () => {
     setGameState('falling');
-    api.start({ top: groundTop - METRIC.APPLE_HEIGHT });
+    api.start({ top: groundTop - METRIC.APPLE_HEIGHT + 200 });
   };
 
   // 사과 낙하 멈춤
@@ -52,7 +57,6 @@ export default function Home() {
 
     // 0.5초 뒤에 모달 표시
     setTimeout(() => {
-      console.log('Setting showModal to true'); // 디버깅 로그
       setShowModal(true);
     }, 500);
   };
@@ -74,49 +78,21 @@ export default function Home() {
           <Apple top={fallAnimation.top.get()} distanceToGround={distanceToGround} />
         </animated.div>
 
-        <div
+        <ArrivalLine top={groundTop} />
+
+        {gameState === 'ready' && <GameStart setGameState={setGameState} />}
+
+        <FallButton
+          top={fallAnimation.top.to((value) => value + 100)}
+          onStart={startFalling}
+          onStop={stopFalling}
           style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            height: 30,
-            backgroundColor: '#EC083F',
-            top: groundTop,
+            opacity: gameState === 'start' ? 1 : 0, // 시작 전일 때만 보이도록
           }}
         />
-
-        {gameState === 'ready' && (
-          <button
-            className="absolute top-[550px] text-lg left-1/2 transform -translate-x-1/2 px-8 py-1 bg-[#5434f2] rounded-full border-[4px]"
-            onClick={() => setGameState('start')}
-          >
-            게임 시작
-          </button>
-        )}
-
-        <animated.button
-          className="absolute right-16"
-          style={{
-            top: fallAnimation.top.to((value) => value + 100), // 사과 위치 + 100px에 버튼 위치
-          }}
-          onMouseDown={startFalling}
-          onMouseUp={stopFalling}
-          onTouchStart={startFalling}
-          onTouchEnd={stopFalling}
-        >
-          <Image src="/click-please.png" alt="꾹 눌러주세요~" width={110} height={100} />
-        </animated.button>
       </div>
 
-      {showModal && (
-        <div className="px-20 text-black fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-2xl shadow-lg text-center">
-          <h2 className="text-2xl font-bold">{gameState === 'success' ? '성공했습니다' : '실패했습니다'}</h2>
-          <p className="mt-2">기록: {Math.max(0, Math.floor(distanceToGround))}m</p>
-          <button className="mt-4 px-10 py-2 bg-[#5434f2] text-white rounded-full" onClick={restartGame}>
-            재시도
-          </button>
-        </div>
-      )}
+      {showModal && <GameModal gameState={gameState} distanceToGround={distanceToGround} restartGame={restartGame} />}
     </>
   );
 }
