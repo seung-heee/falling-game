@@ -2,10 +2,14 @@ import Image from 'next/image';
 
 type AppleProps = {
   top: number;
+  distanceToGround: number;
 };
 
-export default function Apple({ top }: AppleProps) {
+export default function Apple({ top, distanceToGround }: AppleProps) {
   return (
-    <Image src="/apple.png" alt="Apple" draggable={false} width={50} height={50} className="absolute left-1/2 transform -translate-x-1/2" style={{ top }} />
+    <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top }}>
+      <span className="text-black font-bold text-2xl">{Math.max(0, Math.floor(distanceToGround))}m</span>
+      <Image src="/apple.png" alt="Apple" draggable={false} width={50} height={50} className="mx-auto" />
+    </div>
   );
 }
