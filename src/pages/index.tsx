@@ -15,6 +15,7 @@ export default function Home() {
 
   const [gameState, setGameState] = useState<'ready' | 'start' | 'falling' | 'success' | 'failure'>('ready');
   const [distanceToGround, setDistanceToGround] = useState(groundTop - appleStartTop); // 사과와 도착선 간 거리 상태
+  const [showModal, setShowModal] = useState(false); // 모달 표시 상태
 
   const [fallAnimation, api] = useSpring(() => ({
     top: appleStartTop, // 초기 위치
@@ -36,6 +37,32 @@ export default function Home() {
   // 사과 낙하 멈춤
   const stopFalling = () => {
     api.stop();
+    const currentTop = fallAnimation.top.get(); // 현재 사과 위치
+    const appleBottom = currentTop + METRIC.APPLE_HEIGHT; // 사과의 아랫면 위치
+    const distance = groundTop - appleBottom; // 도착선과 사과의 거리
+
+    // 게임 상태 판단
+    if (distance <= 400 && distance >= -200) {
+      setGameState('success'); // 성공
+      console.log(distance, 'success');
+    } else {
+      setGameState('failure'); // 실패
+      console.log(distance, 'failure');
+    }
+
+    // 0.5초 뒤에 모달 표시
+    setTimeout(() => {
+      console.log('Setting showModal to true'); // 디버깅 로그
+      setShowModal(true);
+    }, 500);
+  };
+
+  // 게임 재시작
+  const restartGame = () => {
+    setGameState('ready');
+    setShowModal(false); // 모달 숨기기
+    api.set({ top: appleStartTop }); // 사과 위치 초기화
+    setDistanceToGround(groundTop - appleStartTop); // 거리 초기화
   };
 
   return (
@@ -80,6 +107,16 @@ export default function Home() {
           <Image src="/click-please.png" alt="꾹 눌러주세요~" width={110} height={100} />
         </animated.button>
       </div>
+
+      {showModal && (
+        <div className="px-20 text-black fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-2xl shadow-lg text-center">
+          <h2 className="text-2xl font-bold">{gameState === 'success' ? '성공했습니다' : '실패했습니다'}</h2>
+          <p className="mt-2">기록: {Math.max(0, Math.floor(distanceToGround))}m</p>
+          <button className="mt-4 px-10 py-2 bg-[#5434f2] text-white rounded-full" onClick={restartGame}>
+            재시도
+          </button>
+        </div>
+      )}
     </>
   );
 }
