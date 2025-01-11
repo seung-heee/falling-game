@@ -27,15 +27,21 @@ export default function Home() {
     return arrivalLineTop - appleBottom;
   };
 
+  let modalTimeout: NodeJS.Timeout;
+
   const showGameModal = () => {
-    setTimeout(() => {
+    if (showModal) return;
+    if (modalTimeout) {
+      clearTimeout(modalTimeout); // 이전 타이머 취소
+    }
+    modalTimeout = setTimeout(() => {
       setShowModal(true);
     }, 500);
   };
 
   const [fallAnimation, api] = useSpring(() => ({
     top: appleStartTop, // 사과 초기 위치
-    config: { duration: 1800 },
+    config: { duration: 2500 },
     onChange: (result) => {
       const newDistance = calculateDistance(result.value.top);
       setDistanceToGround(newDistance);
@@ -56,7 +62,12 @@ export default function Home() {
   const stopFalling = () => {
     api.stop();
     const distance = calculateDistance(fallAnimation.top.get());
-    setGameState(distance <= 400 && distance >= 0 ? 'success' : 'failure');
+    const isSuccess = distance <= 400 && distance >= 0;
+    const newState = isSuccess ? 'success' : 'failure';
+
+    if (gameState === 'success' || gameState === 'failure') return; // 중복 방지
+
+    setGameState(newState);
     showGameModal();
   };
 
