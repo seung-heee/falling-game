@@ -38,3 +38,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+---
+
+#### FallButton 상태
+
+- 게임 준비 상태(ready)
+  - 보이지 않음
+- 게임 시작 상태(start)
+  - 시각적으로 보이며, 클릭 가능
+- 낙하 중 상태(falling)
+  - 시각적으로 숨겨지며, 클릭 가능 상태 유지
+- 성공 또는 실패 상태(success or failure)
+  - DOM에서 완전히 제거 (이벤트 받을 수 없음)

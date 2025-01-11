@@ -10,6 +10,7 @@ interface FallButtonProps {
 
 export const FallButton: React.FC<FallButtonProps> = ({ top, onStart, onStop, style }) => (
   <animated.button
+    draggable={false}
     className="absolute right-16"
     style={{ top, ...style }}
     onMouseDown={onStart}
@@ -20,16 +21,3 @@ export const FallButton: React.FC<FallButtonProps> = ({ top, onStart, onStop, st
     <Image src="/click-please.png" alt="꾹 눌러주세요~" width={110} height={100} />
   </animated.button>
 );
-
-{
-  /* <animated.button
-          className="absolute right-16"
-          style={{
-            top: fallAnimation.top.to((value) => value + 100), // 사과 위치 + 100px에 버튼 위치
-          }}
-          onMouseDown={startFalling}
-          onMouseUp={stopFalling}
-        >
-          <Image src="/click-please.png" alt="꾹 눌러주세요~" width={110} height={100} />
-        </animated.button> */
-}
