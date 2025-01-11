@@ -17,6 +17,7 @@ export default function Home() {
   const groundTop = METRIC.BG_HEIGHT - 700; // 도착선 아랫면 위치
   const arrivalLineTop = groundTop - METRIC.GROUND_HEIGHT; // 도착선 윗면 위치
   const appleStartTop = arrivalLineTop - 4000 - METRIC.APPLE_HEIGHT; // 사과 초기 위치 = 도착선 윗면 - 4000 - 사과 높이
+  let modalTimeout: NodeJS.Timeout;
 
   const [gameState, setGameState] = useState<'ready' | 'start' | 'falling' | 'success' | 'failure'>('ready');
   const [distanceToGround, setDistanceToGround] = useState(4000); // 초기 거리: 4000m
@@ -26,8 +27,6 @@ export default function Home() {
     const appleBottom = currentTop + METRIC.APPLE_HEIGHT;
     return arrivalLineTop - appleBottom;
   };
-
-  let modalTimeout: NodeJS.Timeout;
 
   const showGameModal = () => {
     if (showModal) return;
@@ -88,15 +87,16 @@ export default function Home() {
           <Apple top={fallAnimation.top.get()} distanceToGround={distanceToGround} />
         </animated.div>
 
-        <FallButton
-          top={fallAnimation.top.to((value) => value + 200)}
-          onStart={startFalling}
-          onStop={stopFalling}
-          style={{
-            opacity: gameState === 'start' ? 1 : 0,
-            display: gameState === 'success' || gameState === 'failure' ? 'none' : 'block',
-          }}
-        />
+        {!showModal && (
+          <FallButton
+            top={fallAnimation.top.to((value) => value + 200)}
+            onStart={startFalling}
+            onStop={stopFalling}
+            style={{
+              opacity: gameState === 'start' ? 1 : 0,
+            }}
+          />
+        )}
       </div>
 
       {gameState === 'ready' && <GameStart setGameState={setGameState} />}
