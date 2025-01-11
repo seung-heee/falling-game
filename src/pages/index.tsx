@@ -16,26 +16,33 @@ const METRIC = {
 export default function Home() {
   const groundTop = METRIC.BG_HEIGHT - 700; // 도착선 아랫면 위치
   const arrivalLineTop = groundTop - METRIC.GROUND_HEIGHT; // 도착선 윗면 위치
-  const appleStartTop = arrivalLineTop - 4000 - METRIC.APPLE_HEIGHT; // 사과 초기 위치 (도착선 윗면으로부터 4000m 위)
+  const appleStartTop = arrivalLineTop - 4000 - METRIC.APPLE_HEIGHT; // 사과 초기 위치 = 도착선 윗면 - 4000 - 사과 높이
 
   const [gameState, setGameState] = useState<'ready' | 'start' | 'falling' | 'success' | 'failure'>('ready');
   const [distanceToGround, setDistanceToGround] = useState(4000); // 초기 거리: 4000m
   const [showModal, setShowModal] = useState(false); // 모달 표시 상태
 
+  const calculateDistance = (currentTop: number) => {
+    const appleBottom = currentTop + METRIC.APPLE_HEIGHT;
+    return arrivalLineTop - appleBottom;
+  };
+
+  const showGameModal = () => {
+    setTimeout(() => {
+      setShowModal(true);
+    }, 500);
+  };
+
   const [fallAnimation, api] = useSpring(() => ({
     top: appleStartTop, // 사과 초기 위치
     config: { duration: 1800 },
     onChange: (result) => {
-      const currentTop = result.value.top; // 사과의 현재 상단 위치
-      const appleBottom = currentTop + METRIC.APPLE_HEIGHT; // 사과의 아랫면 위치
-      const newDistance = arrivalLineTop - appleBottom; // 도착선 윗면과 사과 아랫면 간 거리
+      const newDistance = calculateDistance(result.value.top);
       setDistanceToGround(newDistance);
-
-      window.scrollTo(0, currentTop - appleStartTop);
+      window.scrollTo(0, result.value.top - appleStartTop);
     },
   }));
 
-  // 사과 낙하 시작
   const startFalling = () => {
     setGameState('falling');
     api.start({
@@ -46,25 +53,13 @@ export default function Home() {
     });
   };
 
-  // 사과 낙하 멈춤
   const stopFalling = () => {
     api.stop();
-    const currentTop = fallAnimation.top.get(); // 현재 사과 위치
-    const appleBottom = currentTop + METRIC.APPLE_HEIGHT; // 사과의 아랫면 위치
-    const distance = arrivalLineTop - appleBottom; // 도착선 윗면과 사과의 거리
-
-    if (distance <= 400 && distance >= 0) {
-      setGameState('success'); // 성공
-    } else {
-      setGameState('failure'); // 실패
-    }
-
-    setTimeout(() => {
-      setShowModal(true);
-    }, 500);
+    const distance = calculateDistance(fallAnimation.top.get());
+    setGameState(distance <= 400 && distance >= 0 ? 'success' : 'failure');
+    showGameModal();
   };
 
-  // 게임 재시작
   const restartGame = () => {
     setGameState('ready');
     setShowModal(false); // 모달 숨기기
@@ -83,7 +78,7 @@ export default function Home() {
         </animated.div>
 
         <FallButton
-          top={fallAnimation.top.to((value) => value + 300)}
+          top={fallAnimation.top.to((value) => value + 200)}
           onStart={startFalling}
           onStop={stopFalling}
           style={{
