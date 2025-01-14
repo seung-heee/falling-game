@@ -27,6 +27,9 @@ export default function Home() {
   }));
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.style.overflow = 'hidden';
+
     // 애니메이션 시작: 4200px 위로 이동
     api.start({ top: -4200 });
   }, [api]);
