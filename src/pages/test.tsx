@@ -42,16 +42,16 @@ export default function Home() {
   const [fallAnimation, api] = useSpring(() => ({
     backgroundTop: 0, // 배경의 초기 위치
     config: { duration: 2500 },
-    onChange: (result) => {
-      const distance = calculateDistance(result.value.backgroundTop);
-      setDistanceToGround(distance); // 거리 업데이트
-    },
+    // onChange: (result) => {
+    //   const distance = calculateDistance(result.value.backgroundTop);
+    //   setDistanceToGround(distance); // 거리 업데이트
+    // },
   }));
 
   const startFalling = () => {
     setGameState('falling');
     api.start({
-      backgroundTop: -4000, // 배경이 이동하는 위치
+      backgroundTop: -4230, // 배경이 이동하는 위치
       onRest: () => {
         stopFalling();
       },
