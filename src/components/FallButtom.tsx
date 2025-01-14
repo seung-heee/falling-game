@@ -12,7 +12,7 @@ interface FallButtonProps {
 export const FallButton: React.FC<FallButtonProps> = ({ top, onStart, onStop, style }) => (
   <animated.button
     draggable={false}
-    className="absolute right-16"
+    className="absolute right-12"
     style={{ top, ...style }}
     onMouseDown={onStart}
     onMouseUp={onStop}
