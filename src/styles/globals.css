@@ -36,3 +36,9 @@ a {
     color-scheme: dark;
   }
 }
+
+.no-tap-highlight {
+  -webkit-touch-callout: none; /* iOS에서 꾹 누르기 기본 동작 방지 */
+  -webkit-user-select: none; /* 텍스트 선택 방지 */
+  user-select: none; /* 텍스트 선택 방지 */
+}
