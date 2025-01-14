@@ -2,7 +2,8 @@ import Image from 'next/image';
 import { animated, Interpolation } from '@react-spring/web';
 
 interface FallButtonProps {
-  top: Interpolation<number, number>; // 정확한 타입 명시
+  top: number; // 버튼의 화면 상 위치
+  // top: Interpolation<number, number>; // 정확한 타입 명시
   onStart: () => void;
   onStop: () => void;
   style?: React.CSSProperties; // style 속성 추가
